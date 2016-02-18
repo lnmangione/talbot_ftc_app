@@ -122,8 +122,6 @@ public class TalBotOpMode extends OpMode {
 
 	/*
 	 * This method will be called repeatedly in a loop
-	 *
-	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#run()
 	 */
 	@Override
 	public void loop() {
@@ -132,12 +130,22 @@ public class TalBotOpMode extends OpMode {
 
 	/*
 	 * Code to run when the op mode is first disabled goes here
-	 *
-	 * @see com.qualcomm.robotcore.eventloop.opmode.OpMode#stop()
 	 */
 	@Override
 	public void stop() {
 
+	}
+
+	void resetMotors(){
+		motorDrive_RF.setPower(0.0);
+		motorDrive_RB.setPower(0.0);
+		motorDrive_LF.setPower(0.0);
+		motorDrive_LB.setPower(0.0);
+
+		motorLift_R.setPower(0.0);
+		motorLift_L.setPower(0.0);
+		motorPull1.setPower(0.0);
+		motorPull2.setPower(0.0);
 	}
 
 }
