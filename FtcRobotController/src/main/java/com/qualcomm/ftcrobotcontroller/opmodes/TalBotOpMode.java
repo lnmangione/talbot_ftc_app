@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -43,7 +44,34 @@ import com.qualcomm.robotcore.hardware.Servo;
  */
 public class TalBotOpMode extends OpMode {
 
+	DcMotor motorDrive_RF;
+	DcMotor motorDrive_LF;
+	DcMotor motorDrive_RB;
+	DcMotor motorDrive_LB;
 
+	DcMotor motorLift_R;
+	DcMotor motorLift_L;
+	DcMotor motorPull1;
+	DcMotor motorPull2;
+
+	Servo armR;
+	double armPositionR;
+	Servo armL;
+	double armSpeedL;
+
+	Servo trigR;
+	double trigPositionR;
+	Servo trigL;
+	double trigPositionL;
+
+	final static double TRIG_R_UP = 1.0;
+	final static double TRIG_R_DOWN = 0.485;
+	final static double TRIG_L_UP = 0.0;
+	final static double TRIG_L_DOWN = 0.45;
+
+	Servo trigSave;
+
+	ColorSensor colorSensor;
 
 	/**
 	 * Constructor
@@ -59,6 +87,36 @@ public class TalBotOpMode extends OpMode {
 	 */
 	@Override
 	public void init() {
+		motorDrive_RF = hardwareMap.dcMotor.get("motorDrive_RF");
+		motorDrive_RB = hardwareMap.dcMotor.get("motorDrive_RB");
+		motorDrive_LF = hardwareMap.dcMotor.get("motorDrive_LF");
+		motorDrive_LB = hardwareMap.dcMotor.get("motorDrive_LB");
+
+		motorLift_R = hardwareMap.dcMotor.get("motorLift_R");
+		motorLift_L = hardwareMap.dcMotor.get("motorLift_L");
+		motorPull1 = hardwareMap.dcMotor.get("motorPull1");
+		motorPull2 = hardwareMap.dcMotor.get("motorPull2");
+
+		armR = hardwareMap.servo.get("servoArmR");
+		armPositionR = 0.5;
+		armR.setPosition(armPositionR);
+		armL = hardwareMap.servo.get("servoArmL");
+		armSpeedL = 0.5;
+		armL.setPosition(armSpeedL);
+
+
+		trigR = hardwareMap.servo.get("servoTrigR");
+		trigPositionR = TRIG_R_UP;
+		trigR.setPosition(trigPositionR);
+
+		trigL = hardwareMap.servo.get("servoTrigL");
+		trigPositionL = TRIG_L_UP;
+		trigL.setPosition(trigPositionL);
+
+		trigSave = hardwareMap.servo.get("servoSave");
+		trigSave.setPosition(0.5);
+
+		colorSensor = hardwareMap.colorSensor.get("colorSensor");
 
 	}
 

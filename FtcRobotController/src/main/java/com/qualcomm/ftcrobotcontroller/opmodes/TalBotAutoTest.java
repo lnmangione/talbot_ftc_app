@@ -37,44 +37,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
+/*
+* This is a test class for the TalBot Autonomous
+*/
 
-/**
- * TeleOp Mode
- * <p>
- * Enables control of the robot via the gamepad
- */
-public class TalBotAutoTest extends OpMode {
-
-	DcMotor motorDrive_RF;
-	DcMotor motorDrive_LF;
-	DcMotor motorDrive_RB;
-	DcMotor motorDrive_LB;
-
-	DcMotor motorLift_R;
-	DcMotor motorLift_L;
-	DcMotor motorPull1;
-	DcMotor motorPull2;
-
-	Servo armR;
-	double armPositionR;
-	Servo armL;
-	double armSpeedL;
-
-	Servo trigR;
-	double trigPositionR;
-	Servo trigL;
-	double trigPositionL;
-
-	final static double TRIG_R_UP = 1.0;
-	final static double TRIG_R_DOWN = 0.485;
-	final static double TRIG_L_UP = 0.0;
-	final static double TRIG_L_DOWN = 0.45;
-
-	Servo trigSave;
+public class TalBotAutoTest extends TalBotOpMode {
 
 	int numIterations;
-
-	ColorSensor colorSensor;
 
 	//some math for using encoders to drive set distance
 	final static int ENCODER_CPR = 1120; // CPR is counts per revolution
@@ -99,51 +68,7 @@ public class TalBotAutoTest extends OpMode {
 	 */
 	@Override
 	public void init() {
-
-
-		/*
-		 * Use the hardwareMap to get the dc motors and servos by name. Note
-		 * that the names of the devices must match the names used when you
-		 * configured your robot and created the configuration file.
-		 */
-		
-		/*
-		 * For the demo Tetrix K9 bot we assume the following,
-		 *   There are two motors "motor_1" and "motor_2"
-		 *   "motor_1" is on the right side of the bot.
-		 *   "motor_2" is on the left side of the bot and reversed.
-		 *
-		 */
-		motorDrive_RF = hardwareMap.dcMotor.get("motorDrive_RF");
-		motorDrive_RB = hardwareMap.dcMotor.get("motorDrive_RB");
-		motorDrive_LF = hardwareMap.dcMotor.get("motorDrive_LF");
-		motorDrive_LB = hardwareMap.dcMotor.get("motorDrive_LB");
-
-		motorLift_R = hardwareMap.dcMotor.get("motorLift_R");
-		motorLift_L = hardwareMap.dcMotor.get("motorLift_L");
-		motorPull1 = hardwareMap.dcMotor.get("motorPull1");
-		motorPull2 = hardwareMap.dcMotor.get("motorPull2");
-
-		armR = hardwareMap.servo.get("servoArmR");
-		armPositionR = 0.5;
-		armR.setPosition(armPositionR);
-		armL = hardwareMap.servo.get("servoArmL");
-		armSpeedL = 0.5;
-		armL.setPosition(armSpeedL);
-
-
-		trigR = hardwareMap.servo.get("servoTrigR");
-		trigPositionR = TRIG_R_UP;
-		trigR.setPosition(trigPositionR);
-
-		trigL = hardwareMap.servo.get("servoTrigL");
-		trigPositionL = TRIG_L_UP;
-		trigL.setPosition(trigPositionL);
-
-		trigSave = hardwareMap.servo.get("servoSave");
-		trigSave.setPosition(0.5);
-
-		colorSensor = hardwareMap.colorSensor.get("colorSensor");
+		super.init();
 
 		//setting up encoders
 		motorDrive_RB.setMode(DcMotorController.RunMode.RESET_ENCODERS);
