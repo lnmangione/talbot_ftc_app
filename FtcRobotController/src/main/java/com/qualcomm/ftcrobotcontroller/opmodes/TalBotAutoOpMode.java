@@ -92,6 +92,9 @@ public class TalBotAutoOpMode extends TalBotOpMode {
 		else if (isBlue(red, green, blue)){
 			return "blue";
 		}
+		else if (isRed(red, green, blue)){
+			return "red";
+		}
 		return "gray";
 
 	}
@@ -115,6 +118,13 @@ public class TalBotAutoOpMode extends TalBotOpMode {
 		double one = (blue - red)/((double)red);
 		double two = (blue - green)/((double)green);
 		return (one > .4 && two > .4);
+	}
+
+	private boolean isRed(int red, int green, int blue){
+		//red must be > 60% other 2 colors
+		double one = (red - green)/((double)green);
+		double two = (red - blue)/((double)blue);
+		return (one > .6 && two > .6);
 	}
 
 
