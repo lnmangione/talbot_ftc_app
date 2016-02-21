@@ -31,24 +31,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
 /*
 * This is a test class for the TalBot Autonomous
 */
 
-public class TalBotAutoTest extends TalBotAutoOpMode {
+public class TalBotAutoPark extends TalBotAutoOpMode {
+
+	String team = "blue";
 
 	//different phases of autonomous numbered
 	int phase = 1;
 	int phaseIterations = 0;
 	int seekingIterations = 0;
-	int seekDirection = 1;
-	int timesLineDetected = 0;
 
 	//some math for using encoders to drive set distance
 	final static int ENCODER_CPR = 1120; // CPR is counts per revolution
@@ -62,7 +57,7 @@ public class TalBotAutoTest extends TalBotAutoOpMode {
 	/**
 	 * Constructor
 	 */
-	public TalBotAutoTest() {
+	public TalBotAutoPark() {
 
 	}
 
@@ -102,6 +97,7 @@ public class TalBotAutoTest extends TalBotAutoOpMode {
 		//dump climbers
 
 		telemetry.addData("Text", "*** Robot Data***");
+		telemetry.addData("Time", "t = " + time);
 		telemetry.addData("RGB Reading", "RGB: (" + colorSensor.red() + ", " + colorSensor.green() + ", " + colorSensor.blue() + ")");
 		if (motorDrive_LB.getController().getMotorControllerDeviceMode() == DcMotorController.DeviceMode.READ_ONLY
 		&& motorDrive_RB.getController().getMotorControllerDeviceMode() == DcMotorController.DeviceMode.READ_ONLY){
@@ -112,7 +108,7 @@ public class TalBotAutoTest extends TalBotAutoOpMode {
 
 	}
 
-	private void runPhase(){
+	public void runPhase(){
 		if (phase == 1){
 			//wait a few seconds before moving
 			runPhase1();
@@ -133,30 +129,16 @@ public class TalBotAutoTest extends TalBotAutoOpMode {
 		else if (phase == 6){
 			runPhase6();
 		}
-		else if (phase == 7){
-			runPhase7();
-		}
-		else if (phase == 8){
-			runPhase8();
-		}
 		phaseIterations ++;
 
 	}
 
 	//waits 5 seconds before setting motors to drive forward
-	private void runPhase1(){
+	public void runPhase1(){
 		if (phaseIterations == 0){
 			motorDrive_RB.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
 			motorDrive_LB.setMode(DcMotorController.RunMode.RUN_USING_ENCODERS);
 		}
-/*
-		if (this.time > 2.2){
-			motorDrive_RB.getController().setMotorControllerDeviceMode(DcMotorController.DeviceMode.READ_ONLY);
-			motorDrive_LB.getController().setMotorControllerDeviceMode(DcMotorController.DeviceMode.READ_ONLY);
-
-
-		}
-		*/
 
 		if (this.time > 2){
 			driveForward(.4);
@@ -166,23 +148,24 @@ public class TalBotAutoTest extends TalBotAutoOpMode {
 	}
 
 
-	private void runPhase2(){
-		//if hit the blue line, next phase
-		if(getColor().equals("blue")){
-			newPhase(3);
+	public void runPhase2(){
+		if (time < 13) {
+			//if hit the colored line, next phase
+			if (getColor().equals(team)) {
+				newPhase(3);
+			}
 		}
-		//otherwise, if driven too far without hitting line, look for line
 
 	}
 
-	private void runPhase3(){
+	public void runPhase3(){
 		if (phaseIterations == 0){
 			driveForward(0);
 		}
 		else if(phaseIterations == 10){
 			driveForward(-.15);
 		}
-		else if(getColor().equals("blue")){
+		else if(getColor().equals(team)){
 			driveForward(0);
 			newPhase(4);
 		}
@@ -190,7 +173,7 @@ public class TalBotAutoTest extends TalBotAutoOpMode {
 
 	}
 
-	private void runPhase4() {
+	public void runPhase4() {
 		int pauseIts = 60;
 		int turnIts = 170;
 		int driveIts = 200;
@@ -228,7 +211,7 @@ public class TalBotAutoTest extends TalBotAutoOpMode {
 	}
 
 
-	private void runPhase5(){
+	public void runPhase5(){
 		if (phaseIterations == 0){
 			driveForward(0.15);
 		}
@@ -240,7 +223,7 @@ public class TalBotAutoTest extends TalBotAutoOpMode {
 
 	}
 
-	private void runPhase6(){
+	public void runPhase6(){
 		if(getColor().equals("white")){
 			seekingIterations = 0;
 			turnRightAll(.15);
@@ -256,42 +239,11 @@ public class TalBotAutoTest extends TalBotAutoOpMode {
 		}
 		else if(phaseIterations >= 415){
 			driveForward(0);
-			//newPhase(7);
 		}
 
 	}
 
-	private void runPhase7(){
-		if (getColor().equals("white")){
-			if (seekingIterations > 0){
-				seekingIterations = 0;
-				timesLineDetected ++;
-				if (timesLineDetected % 2 == 0){
-					seekDirection *= -1;
-				}
-			}
-			driveForward(-.15);
-
-		}
-		else {
-			if (seekingIterations < 80) {
-				turnRightBack(seekDirection * .15);
-			} else if (seekingIterations < 220) {
-				turnRightBack(seekDirection * -.15);
-			}
-			else{
-				driveForward(0);
-				newPhase(8);
-			}
-			seekingIterations++;
-		}
-	}
-
-	private void runPhase8(){
-
-	}
-
-	private void newPhase(int p){
+	public void newPhase(int p){
 		phase = p;
 		phaseIterations = -1;
 		seekingIterations = 0;
@@ -308,7 +260,7 @@ public class TalBotAutoTest extends TalBotAutoOpMode {
 
 	}
 
-	void driveForward(double power){
+	public void driveForward(double power){
 		// write the values to the motors
 		motorDrive_RF.setPower(-power);
 		motorDrive_RB.setPower(-power);
@@ -316,7 +268,7 @@ public class TalBotAutoTest extends TalBotAutoOpMode {
 		motorDrive_LB.setPower(power);
 	}
 
-	void turnLeftAll(double power) {
+	public void turnLeftAll(double power) {
 		motorDrive_RF.setPower(-power);
 		motorDrive_RB.setPower(-power);
 		motorDrive_LF.setPower(-power);
@@ -324,7 +276,7 @@ public class TalBotAutoTest extends TalBotAutoOpMode {
 
 	}
 
-	void turnRightAll(double power) {
+	public void turnRightAll(double power) {
 		motorDrive_RF.setPower(power);
 		motorDrive_RB.setPower(power);
 		motorDrive_LF.setPower(power);
@@ -332,10 +284,4 @@ public class TalBotAutoTest extends TalBotAutoOpMode {
 
 	}
 
-	void turnRightBack(double power){
-		motorDrive_RF.setPower(1.5 * power);
-		motorDrive_RB.setPower(1.5 * power);
-		motorDrive_LF.setPower(.75 * power);
-		motorDrive_LB.setPower(.75 * power);
-	}
 }

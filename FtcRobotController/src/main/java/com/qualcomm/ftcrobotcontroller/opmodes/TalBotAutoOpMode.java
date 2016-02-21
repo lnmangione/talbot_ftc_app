@@ -34,7 +34,6 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -42,41 +41,13 @@ import com.qualcomm.robotcore.hardware.Servo;
  * <p>
  * Enables control of the robot via the gamepad
  */
-public class TalBotOpMode extends OpMode {
-
-	DcMotor motorDrive_RF;
-	DcMotor motorDrive_LF;
-	DcMotor motorDrive_RB;
-	DcMotor motorDrive_LB;
-
-	DcMotor motorLift_R;
-	DcMotor motorLift_L;
-	DcMotor motorPull1;
-	DcMotor motorPull2;
-
-	Servo armR;
-	double armPositionR;
-	Servo armL;
-	double armSpeedL;
-
-	Servo trigR;
-	double trigPositionR;
-	Servo trigL;
-	double trigPositionL;
-
-	final static double TRIG_R_UP = 1.0;
-	final static double TRIG_R_DOWN = 0.485;
-	final static double TRIG_L_UP = 0.0;
-	final static double TRIG_L_DOWN = 0.45;
-
-	Servo trigSave;
-
-	ColorSensor colorSensor;
+public class TalBotAutoOpMode extends TalBotOpMode {
+	String colorString;
 
 	/**
 	 * Constructor
 	 */
-	public TalBotOpMode() {
+	public TalBotAutoOpMode() {
 
 	}
 
@@ -87,37 +58,7 @@ public class TalBotOpMode extends OpMode {
 	 */
 	@Override
 	public void init() {
-		motorDrive_RF = hardwareMap.dcMotor.get("motorDrive_RF");
-		motorDrive_RB = hardwareMap.dcMotor.get("motorDrive_RB");
-		motorDrive_LF = hardwareMap.dcMotor.get("motorDrive_LF");
-		motorDrive_LB = hardwareMap.dcMotor.get("motorDrive_LB");
-
-		motorLift_R = hardwareMap.dcMotor.get("motorLift_R");
-		motorLift_L = hardwareMap.dcMotor.get("motorLift_L");
-		motorPull1 = hardwareMap.dcMotor.get("motorPull1");
-		motorPull2 = hardwareMap.dcMotor.get("motorPull2");
-
-		armR = hardwareMap.servo.get("servoArmR");
-		armPositionR = 0.0;
-		armR.setPosition(armPositionR);
-		armL = hardwareMap.servo.get("servoArmL");
-		armSpeedL = 0.5;
-		armL.setPosition(armSpeedL);
-
-
-		trigR = hardwareMap.servo.get("servoTrigR");
-		trigPositionR = TRIG_R_UP;
-		trigR.setPosition(trigPositionR);
-
-		trigL = hardwareMap.servo.get("servoTrigL");
-		trigPositionL = TRIG_L_UP;
-		trigL.setPosition(trigPositionL);
-
-		trigSave = hardwareMap.servo.get("servoSave");
-		trigSave.setPosition(0.5);
-
-		colorSensor = hardwareMap.colorSensor.get("colorSensor");
-
+		super.init();
 	}
 
 	/*
@@ -136,16 +77,45 @@ public class TalBotOpMode extends OpMode {
 
 	}
 
-	void resetMotors(){
-		motorDrive_RF.setPower(0.0);
-		motorDrive_RB.setPower(0.0);
-		motorDrive_LF.setPower(0.0);
-		motorDrive_LB.setPower(0.0);
 
-		motorLift_R.setPower(0.0);
-		motorLift_L.setPower(0.0);
-		motorPull1.setPower(0.0);
-		motorPull2.setPower(0.0);
+
+	//Methods for detecting light color
+	public String getColor(){
+		int red = colorSensor.red();
+		int green = colorSensor.green();
+		int blue = colorSensor.blue();
+
+
+		if (isWhite(red, green, blue)){
+			return "white";
+		}
+		else if (isBlue(red, green, blue)){
+			return "blue";
+		}
+		return "gray";
+
 	}
+
+	private boolean isWhite(int red, int green, int blue){
+		//white - r,g,b must all be > 90 and close to another
+		if (red > 90 && green > 90 && blue > 90){
+			double one = (red - green)/((red + green)/2.0);
+			double two = (red - blue)/((red + blue)/2.0);
+			double three = (blue - green)/((blue + green)/2.0);
+			if (Math.abs(one) < .2 && Math.abs(two) < .2 && Math.abs(three) < .2){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private boolean isBlue(int red, int green, int blue){
+		//blue must be > 40% other 2 colors
+		double one = (blue - red)/((double)red);
+		double two = (blue - green)/((double)green);
+		return (one > .4 && two > .4);
+	}
+
 
 }

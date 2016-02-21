@@ -57,7 +57,7 @@ public class TalBotTeleOp extends OpMode {
 	Servo armR;
 	double armPositionR;
 	Servo armL;
-	double armSpeedL;
+	double armPositionL;
 
 	Servo trigR;
 	double trigPositionR;
@@ -68,8 +68,6 @@ public class TalBotTeleOp extends OpMode {
 	final static double TRIG_R_DOWN = 0.485;
 	final static double TRIG_L_UP = 0.0;
 	final static double TRIG_L_DOWN = 0.45;
-
-	Servo trigSave;
 
 	ColorSensor colorSensor;
 
@@ -112,13 +110,14 @@ public class TalBotTeleOp extends OpMode {
 		motorLift_L = hardwareMap.dcMotor.get("motorLift_L");
 		motorPull1 = hardwareMap.dcMotor.get("motorPull1");
 		motorPull2 = hardwareMap.dcMotor.get("motorPull2");
+		motorPull1.setDirection(DcMotor.Direction.REVERSE);
 
 		armR = hardwareMap.servo.get("servoArmR");
-		armPositionR = 0.5;
+		armPositionR = 0.0;
 		armR.setPosition(armPositionR);
 		armL = hardwareMap.servo.get("servoArmL");
-		armSpeedL = 0.5;
-		armL.setPosition(armSpeedL);
+		armPositionL = 0.93;
+		armL.setPosition(armPositionL);
 
 
 		trigR = hardwareMap.servo.get("servoTrigR");
@@ -128,9 +127,6 @@ public class TalBotTeleOp extends OpMode {
 		trigL = hardwareMap.servo.get("servoTrigL");
 		trigPositionL = TRIG_L_UP;
 		trigL.setPosition(trigPositionL);
-
-		trigSave = hardwareMap.servo.get("servoSave");
-		trigSave.setPosition(0.5);
 
 		colorSensor = hardwareMap.colorSensor.get("colorSensor");
 
@@ -143,136 +139,10 @@ public class TalBotTeleOp extends OpMode {
 	 */
 	@Override
 	public void loop() {
-
-		/*
-		 * Gamepad 1
-		 * 
-		 * Gamepad 1 controls the motors via the left stick, and it controls the
-		 * wrist/claw via the a,b, x, y buttons
-		 */
-
 		//reset power of all motors
 		resetMotors();
 
-
-		// throttle: left_stick_y ranges from -1 to 1, where -1 is full up, and
-		// 1 is full down
-		// direction: left_stick_x ranges from -1 to 1, where -1 is full left
-		// and 1 is full right
-		float direction = gamepad1.left_stick_y;
-		float throttle = gamepad1.left_stick_x;
-		float right = throttle + direction;
-		float left = throttle - direction;
-
-		// clip the right/left values so that the values never exceed +/- 1
-		right = Range.clip(right, -1, 1);
-		left = Range.clip(left, -1, 1);
-
-		// scale the joystick value to make it easier to control
-		// the robot more precisely at slower speeds.
-		//right = (float)scaleInput(right);
-		//left =  (float)scaleInput(left);
-
-		// write the values to the motors
-		motorDrive_RF.setPower(right);
-		motorDrive_RB.setPower(right);
-		motorDrive_LF.setPower(left);
-		motorDrive_LB.setPower(left);
-
-
-
-		//Lift motors
-		//Rotation
-		if (gamepad1.a){
-			//rotate lift upward
-			motorLift_R.setPower(-1.0);
-			motorLift_L.setPower(1.0);
-
-		}
-		else if (gamepad1.b){
-			//rotate lift downward
-			motorLift_R.setPower(1.0);
-			motorLift_L.setPower(-1.0);
-
-		}
-
-		//Extension
-		if (gamepad1.x){
-			//retract lift
-			motorPull1.setPower(1.0);
-			motorPull2.setPower(-1.0);
-
-
-		}
-		else if(gamepad1.y){
-			//extend lift
-			motorPull1.setPower(-1.0);
-			motorPull2.setPower(1.0);
-
-		}
-
-		//Servo arm position
-		//Note - upward for right servo is 1.0
-		// upward for left servo is 0
-
-		if (gamepad1.left_bumper){
-			armPositionR -= .01;
-			armSpeedL = 1.0;
-		}
-		else if (gamepad1.right_bumper){
-			armPositionR += .01;
-			armSpeedL = 0.0;
-		}
-		else{
-			armSpeedL = 0.5;
-		}
-
-		armPositionR = Range.clip(armPositionR, 0.52, 0.96);
-		armR.setPosition(armPositionR);
-		armL.setPosition(armSpeedL);
-
-		//Trigger servos positions
-		//these are controlled by the d-pad
-		//Note - upward for right servo is 1.0
-		// upward for left servo is 0
-
-		//d-pad up - both servos up
-		if (gamepad1.dpad_up){
-			trigPositionR = TRIG_R_UP;
-			trigPositionL = TRIG_L_UP;
-		}
-		//d-pad down - both servos down
-		else if(gamepad1.dpad_down){
-			trigPositionR = TRIG_R_DOWN;
-			trigPositionL = TRIG_L_DOWN;
-		}
-		//d-pad right - right servo down, left up
-		else if (gamepad1.dpad_right){
-			trigPositionR = TRIG_R_DOWN;
-			trigPositionL = TRIG_L_UP;
-		}
-		//d-pad left - left servo down, right up
-		else if (gamepad1.dpad_left){
-			trigPositionR = TRIG_R_UP;
-			trigPositionL = TRIG_L_DOWN;
-		}
-
-
-		trigPositionR = Range.clip(trigPositionR, 0, 1);
-		trigR.setPosition(trigPositionR);
-		trigPositionL = Range.clip(trigPositionL, 0, 1);
-		trigL.setPosition(trigPositionL);
-
-		//save servo using right and left servos
-		//left trigger brings save down
-		if (gamepad1.left_trigger > 0.6){
-			trigSave.setPosition(0.9);
-		}
-		//right trigger brings save up
-		else if (gamepad1.right_trigger > 0.6){
-			trigSave.setPosition(0.1);
-		}
-
+		checkGamepad1();
 		checkGamepad2();
 
 		/*
@@ -283,7 +153,7 @@ public class TalBotTeleOp extends OpMode {
 		 */
 		telemetry.addData("Text", "*** Robot Data***");
 		telemetry.addData("RGB Reading", "RGB: (" + colorSensor.red() + ", " + colorSensor.green() + ", " + colorSensor.blue() + ")");
-		String whiteMessage = "";
+		String whiteMessage;
 		if (colorSensor.red() > 170 && colorSensor.green() > 170 && colorSensor.blue() > 170){
 			whiteMessage = "WHITE DETECTED";
 		}
@@ -316,35 +186,65 @@ public class TalBotTeleOp extends OpMode {
 		motorPull1.setPower(0.0);
 		motorPull2.setPower(0.0);
 
-		trigSave.setPosition(0.5);
-
 	}
+    void checkGamepad1(){
+		/*
+		 * Gamepad 1
+		 *
+		 * Gamepad 1 controls the motors via the left stick, and it controls the
+		 * wrist/claw via the a,b, x, y buttons
+		 */
 
-	void checkGamepad2(){
+
+		// throttle: left_stick_y ranges from -1 to 1, where -1 is full up, and
+		// 1 is full down
+		// direction: left_stick_x ranges from -1 to 1, where -1 is full left
+		// and 1 is full right
+		float direction = gamepad1.left_stick_y;
+		float throttle = gamepad1.left_stick_x;
+		float right = throttle + direction;
+		float left = throttle - direction;
+
+		// clip the right/left values so that the values never exceed +/- 1
+		right = Range.clip(right, -1, 1);
+		left = Range.clip(left, -1, 1);
+
+		// scale the joystick value to make it easier to control
+		// the robot more precisely at slower speeds.
+		//right = (float)scaleInput(right);
+		//left =  (float)scaleInput(left);
+
+		// write the values to the motors
+		motorDrive_RF.setPower(right);
+		motorDrive_RB.setPower(right);
+		motorDrive_LF.setPower(left);
+		motorDrive_LB.setPower(left);
+
+
+
 		//Lift motors
-		//Rotation
-		if (gamepad2.a){
+		if (gamepad1.x){
 			//rotate lift upward
-			motorLift_R.setPower(-0.25);
-			motorLift_L.setPower(0.25);
+			motorLift_R.setPower(-.2);
+			motorLift_L.setPower(.2);
 
 		}
-		else if (gamepad2.b){
+		else if (gamepad1.b){
 			//rotate lift downward
-			motorLift_R.setPower(0.25);
-			motorLift_L.setPower(-0.25);
+			motorLift_R.setPower(.2);
+			motorLift_L.setPower(-.2);
 
 		}
 
 		//Extension
-		if (gamepad2.x){
+		if (gamepad1.a){
 			//retract lift
 			motorPull1.setPower(1.0);
 			motorPull2.setPower(-1.0);
 
 
 		}
-		else if(gamepad2.y){
+		else if(gamepad1.y){
 			//extend lift
 			motorPull1.setPower(-1.0);
 			motorPull2.setPower(1.0);
@@ -352,21 +252,117 @@ public class TalBotTeleOp extends OpMode {
 		}
 
 		//Servo arm position
+		//Note - upward for right servo is 0.5 (down is 0)
+		// upward for left servo is 0
+		// right bumper brings both arms down (parallel with ground)
+		// left bumper makes arms face upwards
+
+		if (gamepad1.left_bumper){
+			armPositionR += .01;
+			armPositionL -= 0.01;
+		}
+		else if (gamepad1.right_bumper){
+			armPositionR -= .01;
+			armPositionL += 0.01;
+		}
+
+		armPositionR = Range.clip(armPositionR, 0.0, 0.45);
+		armR.setPosition(armPositionR);
+		armPositionL = Range.clip(armPositionL, 0.5, 0.93);
+		armL.setPosition(armPositionL);
+
+		//Trigger servos positions
+		//these are controlled by the d-pad
 		//Note - upward for right servo is 1.0
 		// upward for left servo is 0
 
-		if (gamepad2.left_bumper){
-			armPositionR -= .01;
-			armSpeedL = 1.0;
+		//d-pad up
+		if (gamepad1.dpad_up){
+			trigPositionR = TRIG_R_UP;
+			trigPositionL = TRIG_L_UP;
 		}
-		else if (gamepad2.right_bumper){
-			armPositionR += .01;
-			armSpeedL = 0.0;
+		//d-pad down - both servos down
+		else if(gamepad1.dpad_down){
+			trigPositionR = TRIG_R_DOWN;
+			trigPositionL = TRIG_L_DOWN;
+		}
+		//d-pad right - right servo down, left up
+		else if (gamepad1.dpad_right){
+			trigPositionR = TRIG_R_DOWN;
+			trigPositionL = TRIG_L_UP;
+		}
+		//d-pad left - left servo down, right up
+		else if (gamepad1.dpad_left){
+			trigPositionR = TRIG_R_UP;
+			trigPositionL = TRIG_L_DOWN;
 		}
 
-		armPositionR = Range.clip(armPositionR, 0.52, 0.96);
-		armR.setPosition(armPositionR);
-		armL.setPosition(armSpeedL);
+
+		trigPositionR = Range.clip(trigPositionR, 0, 1);
+		trigR.setPosition(trigPositionR);
+		trigPositionL = Range.clip(trigPositionL, 0, 1);
+		trigL.setPosition(trigPositionL);
+
+
+	}
+	void checkGamepad2(){
+		//Lift motors
+		//Rotation
+		//slow rotation
+		if (gamepad2.y){
+			//rotate lift upward
+			motorLift_R.setPower(-0.2);
+			motorLift_L.setPower(0.2);
+
+		}
+		else if (gamepad2.a){
+			//rotate lift downward
+			motorLift_R.setPower(0.2);
+			motorLift_L.setPower(-0.2);
+
+		}
+
+		//fast rotation
+		if (gamepad2.left_stick_y>.3){
+			//rotate lift upward
+			motorLift_R.setPower(-1);
+			motorLift_L.setPower(1);
+
+		}
+		else if (gamepad2.left_stick_y<-.3){
+			//rotate lift downward
+			motorLift_R.setPower(1);
+			motorLift_L.setPower(-1);
+
+		}
+
+
+		//Extension
+		if (gamepad2.left_trigger>.3){
+			//retract lower lift
+			motorPull1.setPower(1.0);
+
+
+		}
+		else if(gamepad2.left_bumper){
+			//extend lower lift
+			motorPull1.setPower(-1.0);
+
+
+		}
+
+		if (gamepad2.right_trigger>.3){
+			//retract upper lift
+			motorPull2.setPower(-1.0);
+
+
+		}
+		else if(gamepad2.right_bumper){
+			//extend upper lift
+			motorPull2.setPower(1.0);
+
+		}
+
 
 		//Trigger servos positions
 		//these are controlled by the d-pad
@@ -400,50 +396,7 @@ public class TalBotTeleOp extends OpMode {
 		trigPositionL = Range.clip(trigPositionL, 0, 1);
 		trigL.setPosition(trigPositionL);
 
-		//save servo using right and left servos
-		//left trigger brings save down
-		if (gamepad2.left_trigger > 0.6){
-			trigSave.setPosition(0.9);
-		}
-		//right trigger brings save up
-		else if (gamepad2.right_trigger > 0.6){
-			trigSave.setPosition(0.1);
-		}
 
 	}
 
-
-    /*
-	double scaleInput(double dVal)  {
-		double[] scaleArray = { 0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
-				0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00 };
-		
-		// get the corresponding index for the scaleInput array.
-		int index = (int) (dVal * 16.0);
-		
-		// index should be positive.
-		if (index < 0) {
-			index = -index;
-		}
-
-		// index cannot exceed size of array minus 1.
-		if (index > 16) {
-			index = 16;
-		}
-
-		// get value from the array.
-		double dScale = 0.0;
-		if (dVal < 0) {
-			dScale = -scaleArray[index];
-		} else {
-			dScale = scaleArray[index];
-		}
-
-		//.8 speed test
-		//dScale *= .8;
-
-		// return scaled value.
-		return dScale;
-	}
-    */
 }
