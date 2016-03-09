@@ -57,7 +57,7 @@ public class TalBotOpMode extends OpMode {
 	Servo armR;
 	double armPositionR;
 	Servo armL;
-	double armSpeedL;
+	double armPositionL;
 
 	Servo trigR;
 	double trigPositionR;
@@ -101,8 +101,8 @@ public class TalBotOpMode extends OpMode {
 		armPositionR = 0.0;
 		armR.setPosition(armPositionR);
 		armL = hardwareMap.servo.get("servoArmL");
-		armSpeedL = 0.5;
-		armL.setPosition(armSpeedL);
+		armPositionL = 0.89;
+		armL.setPosition(armPositionL);
 
 
 		trigR = hardwareMap.servo.get("servoTrigR");

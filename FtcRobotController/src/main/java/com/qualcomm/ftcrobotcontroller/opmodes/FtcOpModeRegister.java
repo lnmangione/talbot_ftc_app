@@ -65,8 +65,8 @@ public class FtcOpModeRegister implements OpModeRegister {
     manager.register("TalBotTeleOp", TalBotTeleOp.class);
     manager.register("TalBotAutoParkBlue", TalBotAutoParkBlue.class);
     manager.register("TalBotAutoParkRed", TalBotAutoParkRed.class);
-    manager.register("TalBotAutoClimber", TalBotAutoClimber.class);
-
+    manager.register("TalBotAutoClimberBlue",TalBotAutoClimberBlue.class);
+    manager.register("TalBotAutoClimberRed",TalBotAutoClimberRed.class);
     //manager.register("TalBotAutoTest", TalBotAutoTest.class);
 
 

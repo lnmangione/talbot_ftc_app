@@ -86,6 +86,9 @@ public class TalBotAutoPark extends TalBotAutoOpMode {
 		if (this.time < 28.5){
 			runPhase();
 		}
+		else{
+			resetMotors();
+		}
 
 
 		//turn on encoders
@@ -154,6 +157,11 @@ public class TalBotAutoPark extends TalBotAutoOpMode {
 			if (getColor().equals(team)) {
 				newPhase(3);
 			}
+
+		}
+		else
+		{
+			resetMotors();
 		}
 
 	}

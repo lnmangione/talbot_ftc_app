@@ -64,10 +64,10 @@ public class TalBotTeleOp extends OpMode {
 	Servo trigL;
 	double trigPositionL;
 
-	final static double TRIG_R_UP = 1.0;
-	final static double TRIG_R_DOWN = 0.485;
-	final static double TRIG_L_UP = 0.0;
-	final static double TRIG_L_DOWN = 0.45;
+	final static double TRIG_R_UP = 0.50;
+	final static double TRIG_R_DOWN = 0.05;
+	final static double TRIG_L_UP = 0.37;
+	final static double TRIG_L_DOWN = 0.87;
 
 	ColorSensor colorSensor;
 
@@ -116,7 +116,7 @@ public class TalBotTeleOp extends OpMode {
 		armPositionR = 0.0;
 		armR.setPosition(armPositionR);
 		armL = hardwareMap.servo.get("servoArmL");
-		armPositionL = 0.93;
+		armPositionL = 0.89;
 		armL.setPosition(armPositionL);
 
 
@@ -268,7 +268,7 @@ public class TalBotTeleOp extends OpMode {
 
 		armPositionR = Range.clip(armPositionR, 0.0, 0.45);
 		armR.setPosition(armPositionR);
-		armPositionL = Range.clip(armPositionL, 0.5, 0.93);
+		armPositionL = Range.clip(armPositionL, 0.44, 0.89);
 		armL.setPosition(armPositionL);
 
 		//Trigger servos positions
@@ -311,25 +311,25 @@ public class TalBotTeleOp extends OpMode {
 		//slow rotation
 		if (gamepad2.y){
 			//rotate lift upward
-			motorLift_R.setPower(-0.2);
-			motorLift_L.setPower(0.2);
+			motorLift_R.setPower(-0.35);
+			motorLift_L.setPower(0.35);
 
 		}
 		else if (gamepad2.a){
 			//rotate lift downward
-			motorLift_R.setPower(0.2);
-			motorLift_L.setPower(-0.2);
+			motorLift_R.setPower(0.35);
+			motorLift_L.setPower(-0.35);
 
 		}
 
 		//fast rotation
-		if (gamepad2.left_stick_y>.3){
+		if (gamepad2.left_stick_y<-.3){
 			//rotate lift upward
 			motorLift_R.setPower(-1);
 			motorLift_L.setPower(1);
 
 		}
-		else if (gamepad2.left_stick_y<-.3){
+		else if (gamepad2.left_stick_y>.3){
 			//rotate lift downward
 			motorLift_R.setPower(1);
 			motorLift_L.setPower(-1);

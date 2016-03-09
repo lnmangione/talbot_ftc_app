@@ -135,6 +135,12 @@ public class TalBotAutoClimber extends TalBotAutoOpMode {
 		else if (phase==8){
 			runPhase8();
 		}
+		else if (phase==9){
+			runPhase9();
+		}
+		else if (phase==10){
+			runPhase10();
+		}
 		phaseIterations ++;
 
 	}
@@ -245,6 +251,7 @@ public class TalBotAutoClimber extends TalBotAutoOpMode {
 		}
 		else if(phaseIterations >= 415){
 			driveForward(0);
+			newPhase(7);
 		}
 
 	}
@@ -265,11 +272,34 @@ public class TalBotAutoClimber extends TalBotAutoOpMode {
 		int topKek=300;
 		if (phaseIterations==0)
 		{
-			dumpClimbers(.5);
+			dumpClimbers(.25);
 		}
 		else if (phaseIterations==topKek){
 			dumpClimbers(0);
 			newPhase(9);
+		}
+	}
+	public void runPhase9(){
+		int topKek=200;
+		if(phaseIterations==0)
+		{
+			extendLift(-.5);
+		}
+		else if(phaseIterations==topKek)
+		{
+			extendLift(0);
+			newPhase(10);
+		}
+	}
+	public void runPhase10(){
+		int topKek=300;
+		if (phaseIterations==0)
+		{
+			dumpClimbers(-.25);
+		}
+		else if (phaseIterations==topKek){
+			dumpClimbers(0);
+
 		}
 	}
 
